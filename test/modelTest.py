@@ -1,9 +1,10 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
 
 # 指定模型
 MODEL = r"D:\models\Qwen2-1.5B-Instruct"
-
+LORA_PATH = r"D:\git\Qwen-finetune\lora\cpmi"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 加载训练好的模型和分词器
@@ -12,6 +13,11 @@ model = AutoModelForCausalLM.from_pretrained(MODEL, trust_remote_code=False)
 model.to(device)
 # 模型设为评估状态
 model.eval()
+
+if LORA_PATH:
+    # 加载lora权重
+    model = PeftModel.from_pretrained(model, model_id=LORA_PATH)
+
 
 # 定义测试示例
 test_example = {
@@ -49,5 +55,6 @@ print("===========")
 
 # 提问: Instruction: 使用中医知识正确回答适合这个病例的中成药。
 # Input: 肛门疼痛，痔疮，肛裂。
-# 回答: 这个病应该用中成药来治疗，比如肛泰软膏、槐角丸等。这些药物可以缓解肛门部位的不适和疼痛感。如果症状比较严重或者持续不愈，建议去医院就诊，让医生给你开处方中药进行调治。同时，注意饮食清淡、多吃蔬菜水果，避免辛辣刺激性食物。
-
+# 回答: 病情描述：患者肛门部位疼痛，伴有便血、脱垂等症状。
+#
+# 推荐使用：地榆槐角丸（含大黄）或者金匮肾气丸。这两种药物都有清热解毒、收敛止痛的功效，对治疗肛肠疾病有较好的效果。其中，地榆槐角丸适用于急性或慢性细菌性痢疾引起的下痢赤白脓血等；金匮肾气丸则可用于治疗脾虚型慢性盆腔炎引起的带下量多色淡，腰膝酸软，神疲乏力等症。建议在医师指导下服用，并定期复查病情变化。

@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 import json
 from transformers import AutoTokenizer
 
-data_path = r"D:\workspace\medical-ft\data\cpmi_dataset_100.json"
+data_path = r"D:\git\Qwen-finetune\data\cpmi_dataset_100.json"
 model_path = r"D:\models\Qwen2-1.5B-Instruct"
 
 data = json.load(open(data_path, encoding="utf-8"))

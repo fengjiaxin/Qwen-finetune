@@ -25,3 +25,6 @@ print(text)
 # <|im_start|>user
 # 你好，有什么可以帮助你的<|im_end|>
 # <|im_start|>assistant
+
+max_length = tokenizer.model_max_length
+print(max_length)
