@@ -12,10 +12,9 @@ import gradio as gr
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer
 
-MODEL_PATH = 'D:/models/Qwen2-0.5B-Instruct'
-LORA_PATH = "D:/git/Qwen-finetune/output/qwen2-0.5B-Instruct/checkpoint-667"
-
-
+MODEL_PATH = '/workspace/models/Qwen2-7B-Instruct'
+LORA_PATH = "/workspace/qwen-main/output/qwen2-7B-Instruct"
+ 
 def _get_args():
     parser = ArgumentParser(description="Qwen2-Instruct web chat demo.")
 
@@ -25,22 +24,22 @@ def _get_args():
     parser.add_argument("--lora_path", type=str, default=LORA_PATH,
                         help="Checkpoint lora path, default to %(default)r")
 
-    parser.add_argument("--use_lora", default=True,type=bool,
+    parser.add_argument("--use_lora",action="store_true",
                         help="是否使用lora地址，注意lora_path不能为空")
 
-    parser.add_argument("--cpu-only", default=True, type=bool,
+    parser.add_argument("--cpu-only", action="store_true",
                         help="Run demo with CPU only")
 
-    parser.add_argument("--share", default=False,type=bool,
+    parser.add_argument("--share", action="store_true",
                         help="Create a publicly shareable link for the interface.")
 
-    parser.add_argument("--inbrowser", default=False,type=bool,
+    parser.add_argument("--inbrowser", action="store_true",
                         help="Automatically launch the interface in a new tab on the default browser.")
 
     parser.add_argument("--server-port", type=int, default=8000,
                         help="Demo server port.")
 
-    parser.add_argument("--server-name", type=str, default="127.0.0.1",
+    parser.add_argument("--server-name", type=str, default="0.0.0.0",
                         help="Demo server name.")
 
     args = parser.parse_args()
@@ -56,16 +55,17 @@ def _load_model_tokenizer(args):
     if args.cpu_only:
         device_map = "cpu"
     else:
-        device_map = "auto"
+        device_map = "cuda" if torch.cuda.is_available() else 'cpu'
 
     model = AutoModelForCausalLM.from_pretrained(
         args.checkpoint_path,
-        torch_dtype="auto",
         device_map=device_map,
         resume_download=False,
     ).eval()
+
     if args.use_lora and args.lora_path:
         # 加载lora权重
+        print(args.use_lora)
         model = PeftModel.from_pretrained(model, model_id=LORA_PATH)
     model.generation_config.max_new_tokens = 2048  # For chat.
 
@@ -188,5 +188,5 @@ def main():
 if __name__ == "__main__":
     main()
 
-#python web_demo.py --use_lora False --server-port 8080
-#python web_demo.py --use_lora True --server-port 8081
+#python web_demo.py --server-port 8000
+#python web_demo.py --use_lora --server-port 8001
