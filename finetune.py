@@ -63,12 +63,18 @@ def safe_save_model_for_hf_trainer(trainer: transformers.Trainer, output_dir: st
     trainer._save(output_dir, state_dict=state_dict)
 
 
-# <|im_start|>system
-# You are a helpful assistant!
-# <|im_end|>
-# <|im_start|>user
-# How are you?<|im_end|>
-# <|im_start|>assistant
+# chat的对话格式
+'''
+<|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+How are you<|im_end|>
+<|im_start|>assistant
+I am doing well!<|im_end|>
+'''
+
+# 文本结束的：<|endoftext|>
+# 对话 token：<|im_start|> 和 <|im_end|>
 def preprocess(
         sources,
         tokenizer: transformers.PreTrainedTokenizer,
@@ -80,9 +86,6 @@ def preprocess(
     im_start = tokenizer.convert_tokens_to_ids("<|im_start|>")
     im_end = tokenizer.convert_tokens_to_ids("<|im_end|>")
     nl_tokens = tokenizer('\n').input_ids
-    _system = tokenizer('system').input_ids + nl_tokens
-    _user = tokenizer('user').input_ids + nl_tokens
-    _assistant = tokenizer('assistant').input_ids + nl_tokens
 
     # Apply prompt templates
     input_ids, targets = [], []
@@ -92,7 +95,7 @@ def preprocess(
 
         input_id, target = [], []
         # <|im_start|>system\nYou are a helpful assistant.<|im_end|>\n
-        system = [im_start] + _system + tokenizer(system_message).input_ids + [im_end] + nl_tokens
+        system = [im_start] + tokenizer('system').input_ids + nl_tokens + tokenizer(system_message).input_ids + [im_end] + nl_tokens
         input_id += system
         target += [im_start] + [IGNORE_TOKEN_ID] * (len(system) - 3) + [im_end] + nl_tokens
         assert len(input_id) == len(target)
