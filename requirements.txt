@@ -1,5 +1,12 @@
-transformers==4.43.4
+transformers~=4.44.0
 transformers-stream-generator==0.0.4
 accelerate==0.32.0
 tiktoken==0.8.0
 scipy==1.14.1
+torch~=2.0.1
+peft~=0.13.2
+streamlit~=1.40.1
+requests~=2.32.3
+uvicorn~=0.32.0
+fastapi~=0.115.4
+gradio~=5.5.0
