@@ -4,22 +4,22 @@ import json
 
 def dump_output(r):
     print("\n")
-    for x in r.iter_content(None, decode_unicode=True):
-        line = x.strip()
-        print("===================")
-        print(line, flush=True)
-        left_pos = line.find('{')
-        right_pos = line.find('}')
-        dict_str = line[left_pos:right_pos + 1]
-        print(dict_str)
-        dic = json.loads(dict_str)
-        print(dic)
-        print("++++++++++++++++")
+    for line in r.aiter_text(None, decode_unicode=True):
+        if line :
+            print(line, flush=True)
+            left_pos = line.find('{')
+            right_pos = line.find('}')
+            if left_pos > 0 and right_pos > 0:
+                dict_str = line[left_pos:right_pos + 1]
+                dic = json.loads(dict_str)
+                print("===================")
+                print(dic["response"])
+                print("++++++++++++++++")
 
 
 def test_stream_chat():
     data = {
-        "query": "请用100字左右的文字介绍自己",
+        "query": "以面向传输设备及网管系统的安全监测和动态免疫技术研究为项目名称，写出目的和意义。",
         "max_tokens": 1024,
         "top_p": 1.0,
         "temperature": 0.7

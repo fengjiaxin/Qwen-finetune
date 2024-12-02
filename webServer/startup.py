@@ -21,13 +21,18 @@ def run_webui(url: str, host: str, port: int):
 if __name__ == '__main__':  # 必须将进程过程放到main函数中去
     DEFAULT_BIND_HOST = "0.0.0.0" if sys.platform != "win32" else "127.0.0.1"
 
+    process_list = []
+
     PORT1 = 8051
     URL1 = "http://10.200.101.150:8080/stream"
+    process1 = mp.Process(target=run_webui, args=(URL1, DEFAULT_BIND_HOST, PORT1))
+    process_list.append(process1)
 
-    PORT2 = 8052
-    URL2 = "http://10.200.101.150:8081/stream"
-    process_list = [mp.Process(target=run_webui, args=(URL1, DEFAULT_BIND_HOST, PORT1)),
-                    mp.Process(target=run_webui, args=(URL2, DEFAULT_BIND_HOST, PORT2))]
+    # PORT2 = 8052
+    # URL2 = "http://10.200.101.150:8081/stream"
+    # process2 = mp.Process(target=run_webui, args=(URL2, DEFAULT_BIND_HOST, PORT2))
+    # process_list.append(process2)
+
     for p in process_list:
         p.start()
     for p in process_list:

@@ -54,7 +54,7 @@ class ChatQwen:
         )
         inputs = self.tokenizer([input_text], return_tensors="pt").to(self.model.device)
         streamer = TextIteratorStreamer(
-            tokenizer=self.tokenizer, skip_prompt=True, timeout=60.0, skip_special_tokens=True
+            tokenizer=self.tokenizer, skip_prompt=True, timeout=360.0, skip_special_tokens=True
         )
 
         generation_kwargs = {

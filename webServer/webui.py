@@ -51,10 +51,15 @@ def main(url):
         }
         input_placeholder.markdown(prompt_text)
         response = requests.post(url, headers=headers, json=data, stream=True)
-        for x in response.iter_content(None, decode_unicode=True):
-            dic = handle_line(x)
-            res_txt = dic["response"]
-            message_placeholder.markdown(res_txt)
+        for line in response.iter_content(None, decode_unicode=True):
+            if line:
+                left_pos = line.find('{')
+                right_pos = line.find('}')
+                if left_pos > 0 and right_pos > 0:
+                    dict_str = line[left_pos:right_pos + 1]
+                    dic = json.loads(dict_str)
+                    res_txt = dic["response"]
+                    message_placeholder.markdown(res_txt)
 
 
 if __name__ == "__main__":
